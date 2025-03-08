@@ -16,8 +16,8 @@
 ## 🚀 Run
 1. install
 ```
-conda create -n freecustom python=3.10 -y
-conda activate freecustom
+conda create -n freemix python=3.11.9 -y
+conda activate freemix
 pip install -r requirements.txt
 ```
 
