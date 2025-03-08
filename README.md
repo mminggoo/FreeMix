@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>FreeCustom: Tuning-Free Customized Image Generation for Multi-Concept Composition</h1>
+<h1>FreeMix: Personalized Structure and Appearance Control Without Finetuning</h1>
 
 
 [Ganggui Ding](https://dingangui.github.io)\*, [Canyu Zhao](https://volcverse.vercel.app)\*, [Wen Wang](https://github.com/encounter1997)\*, [Zhen Yang](https://zhenyangcs.github.io/), [Zide Liu](https://github.com/zideliu), [Hao Chen](https://scholar.google.com/citations?user=FaOqRpcAAAAJ)&#8224;, [Chunhua Shen](https://cshen.github.io/)&#8224; 
