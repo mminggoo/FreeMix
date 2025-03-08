@@ -23,28 +23,9 @@ pip install -r requirements.txt
 
 2. run the following command to view the results
 ```
-python freecustom_stable_diffusion.py
+# multi-concept mixing
+python inference.py
 ```
 
-**At this point, you can already see the customized results, but you can also try the following two methods:**
-1. try another config
-- replace `./configs/config_stable_diffusion.yaml` with one of configuration files in the `./datasets/freecustom/multi_concept` folder. 
-- run as step 2.
 
-2. prepare your own data
-- Select 2 to 3 images that represent the concepts you wish to customize, ensuring that each concept has contextual interaction.
-- Use [Grounded-Segment-Anything](https://github.com/IDEA-Research/Grounded-Segment-Anything) or other segmentation tools to obtain concept masks for filtering out irrelevant pixels.
-- Store your images and masks according to the structure in the dataset folder, making sure that the filenames and extensions of the images and masks are identical.
-- Modify the `./configs/config_stable_diffusion.yaml` file by updating the "ref_image_infos" and "target_prompt" fields to align with your prepared data.
-- Execute `python freecustom_stable_diffusion.py` to view the results.
-- Feel free to experiment with adjusting the "seeds" and "mask_weights" fields in the `./configs/config_stable_diffusion.yaml` to achieve satisfactory results.
-
-## 🌄 Demo of customized image generation
-### multi-concept composition 
-![results_of_multi_concept](docs/static/images/results_of_multi_concept.png)
-
-### single-concept customization
-![results_of_single_concept](docs/static/images/results_of_single_concept.png)
-
-Our method excels at *rapidly* generating high-quality images with multiple concept combinations and single concept customization, without any model parameter tuning. The identity of each concept is remarkably preserved. Furthermore, our method exhibits great versatility and robustness when dealing with different categories of concepts. This versatility allows users to generate customized images that involve diverse combinations of concepts, catering to their specific needs and preferences. Best viewed on screen.
 
