@@ -137,8 +137,6 @@ if __name__ == "__main__":
         # set latent
         randn_latent_z_T = torch.randn_like(ref_latents_z_0[0])   # Initialize Gaussian noise for generated image $z_T$
         
-        # idx = torch.randperm(randn_latent_z_T.nelement()//4)
-        # randn_latent_z_T = randn_latent_z_T.view(1, 4, -1)[:, :, idx].view(randn_latent_z_T.size())
 
         latents = torch.cat([randn_latent_z_T] + ref_latents_z_0) # Concatenate $z_T$ and the latent code of the reference images $z_0^'$
         
