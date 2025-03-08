@@ -8,7 +8,7 @@ from diffusers.utils.torch_utils import randn_tensor
 from diffusers.pipelines.stable_diffusion import StableDiffusionPipeline, StableDiffusionPipelineOutput
 from diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion import rescale_noise_cfg
 
-class StableDiffusionFreeCustomPipeline(StableDiffusionPipeline):
+class StableDiffusionFreeMixPipeline(StableDiffusionPipeline):
 
     @torch.no_grad()
     def image2latent(self, image):
