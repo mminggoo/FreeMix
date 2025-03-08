@@ -14,7 +14,7 @@ def normalize(x, dim):
     return x_normalized
 
 class DMSASelfAttention():
-    def __init__(self,  start_step=0, end_step=50, step_idx=None, layer_idx=None, ref_masks=None, mask_weights=[1.0,1.0,1.0], style_fidelity=1, viz_cfg=None, word_idx=None, structure_step=12, structure_layer=12, norm_step=50, noly_stru=False, noly_appear=False):
+    def __init__(self,  start_step=0, end_step=50, step_idx=None, layer_idx=None, ref_masks=None, mask_weights=[1.0,1.0,1.0], style_fidelity=1, word_idx=None, structure_step=12, structure_layer=12, norm_step=50, noly_stru=False, noly_appear=False):
         """
         Args:
             start_step   : the step to start transforming self-attention to multi-reference self-attention
@@ -23,7 +23,6 @@ class DMSASelfAttention():
             layer_idx    : list of the layers to transform self-attention to multi-reference self-attention
             ref_masks    : masks of the input reference images
             mask_weights : mask weights for each reference masks
-            viz_cfg      : config for visualization
         """
         self.cur_step       =  0
         self.num_att_layers = -1
@@ -42,7 +41,6 @@ class DMSASelfAttention():
         
         self.style_fidelity = style_fidelity
 
-        self.viz_cfg = viz_cfg
 
         self.cross_attns = []
         self.attention_store = None
@@ -50,7 +48,6 @@ class DMSASelfAttention():
         self.norm_step = norm_step
         self.noly_stru = noly_stru
         self.noly_appear = noly_appear
-        self.images = []
        
     def after_step(self):
         if self.attention_store is None:
@@ -126,30 +123,12 @@ class DMSASelfAttention():
             sim = torch.cat(sim_or, dim=-1)
         attn = sim.softmax(-1)
 
-        # viz attention map within MRSA module
-        if self.viz_cfg.viz_attention_map == True and \
-            kwargs.get("attn_batch_type") == 'mrsa' and \
-            self.cur_step in self.viz_cfg.viz_map_at_step and \
-            self.cur_att_layer // 2 in self.viz_cfg.viz_map_at_layer:
-            visualize_attention_map(attn, self.viz_cfg, self.cur_step, self.cur_att_layer//2)
-        
-        # viz feature correspondence within MRSA module
-        if self.viz_cfg.viz_feature_correspondence == True and \
-            kwargs.get("attn_batch_type") == 'mrsa' and \
-            self.cur_step in self.viz_cfg.viz_corr_at_step and \
-            self.cur_att_layer // 2 in self.viz_cfg.viz_corr_at_layer:
-            visualize_correspondence(self.viz_cfg, attn, self.cur_step, self.cur_att_layer//2)
         
         if len(attn) == 2 * len(v):
             v = torch.cat([v] * 2)
         out = torch.einsum("h i j, h j d -> h i d", attn, v)
         out = rearrange(out, "(h1 h) (b n) d -> (h1 b) n (h d)", b=B, h=num_heads)
 
-        if idx != 0 and kwargs.get("attn_batch_type") == 'mrsa':
-            out_stru = torch.einsum("h i j, h j d -> h i d", attn[..., :H*W], v[:, :H*W])
-            out_stru = rearrange(out_stru, "(h1 h) (b n) d -> (h1 b) n (h d)", b=B, h=num_heads)
-            mask_stru = self.get_ref_mask(torch.where(structure_mask > 0.1, 1, 0), 1, H, W).unsqueeze(0).unsqueeze(-1)
-            out = out*mask_stru + (1-mask_stru)*out_stru
 
         return out
 
@@ -162,8 +141,6 @@ class DMSASelfAttention():
 
         
         structure_mask = self.aggregate_cross_attn_map(self.word_idx)
-        # tensor = torch.where(structure_mask > 0.2, 1, 0).squeeze(0).squeeze(0)
-        # Image.fromarray((tensor.cpu().numpy() * 255).astype(np.uint8)).resize((256, 256)).save('attn.jpg')
         structure_mask = self.get_ref_mask(torch.where(structure_mask > 0.2, 1, 0), 1, H, W)
         
         ref_mask = self.ref_masks[1]
@@ -186,19 +163,6 @@ class DMSASelfAttention():
 
         attn = sim.softmax(-1)
         
-        # viz attention map within MRSA module
-        if self.viz_cfg.viz_attention_map == True and \
-            kwargs.get("attn_batch_type") == 'mrsa' and \
-            self.cur_step in self.viz_cfg.viz_map_at_step and \
-            self.cur_att_layer // 2 in self.viz_cfg.viz_map_at_layer:
-            visualize_attention_map(attn, self.viz_cfg, self.cur_step, self.cur_att_layer//2)
-        
-        # viz feature correspondence within MRSA module
-        if self.viz_cfg.viz_feature_correspondence == True and \
-            kwargs.get("attn_batch_type") == 'mrsa' and \
-            self.cur_step in self.viz_cfg.viz_corr_at_step and \
-            self.cur_att_layer // 2 in self.viz_cfg.viz_corr_at_layer:
-            visualize_correspondence(self.viz_cfg, attn, self.cur_step, self.cur_att_layer//2)
         
         if len(attn) == 2 * len(v):
             v = torch.cat([v] * 2)
@@ -258,30 +222,3 @@ class DMSASelfAttention():
         out = torch.einsum('b i j, b j d -> b i d', attn, v)
         out = rearrange(out, '(b h) n d -> b n (h d)', h=num_heads)
         return out
-
-
-def expand_first(feat, scale=1.,):
-    b = feat.shape[0]
-    feat_style = torch.stack((feat[0], feat[b // 2])).unsqueeze(1)
-    if scale == 1:
-        feat_style = feat_style.expand(2, b // 2, *feat.shape[1:])
-    else:
-        feat_style = feat_style.repeat(1, b // 2, 1, 1, 1)
-        feat_style = torch.cat([feat_style[:, :1], scale * feat_style[:, 1:]], dim=1)
-    return feat_style.reshape(*feat.shape)
-
-
-def calc_mean_std(feat, dim=-2, eps: float = 1e-5):
-    feat_std = (feat.var(dim=dim, keepdims=True) + eps).sqrt()
-    feat_mean = feat.mean(dim=dim, keepdims=True)
-    return feat_mean, feat_std
-
-
-def adain(feat, cond_feat):
-    feat_mean, feat_std = calc_mean_std(feat)
-    cond_feat_mean, cond_feat_std = calc_mean_std(cond_feat)
-    
-    feat = (feat - feat_mean) / feat_std
-    feat = feat * cond_feat_std + cond_feat_mean
-
-    return feat
