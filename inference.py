@@ -11,7 +11,7 @@ from diffusers import DDIMScheduler
 
 from utils.utils import load_image, load_mask
 from pipelines.pipeline_stable_diffusion_freecustom import StableDiffusionFreeCustomPipeline
-from freecustom.mrsa13 import MultiReferenceSelfAttention
+from freecustom.dmsa import DMSASelfAttention
 from freecustom.hack_attention import hack_self_attention_to_mrsa
 
 def get_word_inds(text: str, word_place: int, tokenizer):
@@ -132,7 +132,7 @@ if __name__ == "__main__":
         seed_everything(seed)
 
         # hack the attention module
-        mrsa = MultiReferenceSelfAttention(
+        mrsa = DMSASelfAttention(
                                 start_step     = args.start_step,
                                 end_step       = args.end_step,
                                 layer_idx      = [8,9,10,11,12,13,14,15],
