@@ -10,7 +10,7 @@ from pytorch_lightning import seed_everything
 from diffusers import DDIMScheduler
 
 from utils.utils import load_image, load_mask
-from pipelines.pipeline_stable_diffusion_freecustom import StableDiffusionFreeCustomPipeline
+from pipelines.pipeline_stable_diffusion_freemix import StableDiffusionFreeMixPipeline
 from freemix.dmsa import DMSASelfAttention
 from freemix.hack_attention import hack_self_attention_to_mrsa
 
@@ -74,7 +74,7 @@ if __name__ == "__main__":
                                 clip_sample=False, 
                                 set_alpha_to_one=False
                             )
-    model = StableDiffusionFreeCustomPipeline.from_pretrained(args.model_path, scheduler=scheduler).to(device)
+    model = StableDiffusionFreeMixPipeline.from_pretrained(args.model_path, scheduler=scheduler).to(device)
     model.safety_checker = None
 
     # prapare data (including prompt, mask, image, latent)
