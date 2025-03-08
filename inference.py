@@ -37,25 +37,24 @@ def get_word_inds(text: str, word_place: int, tokenizer):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--stru_path', type=str, default="data")
-    parser.add_argument('--attr_path', type=str, default="data")
-    parser.add_argument('--stru_prompt', type=str, default="data")
-    parser.add_argument('--attr_prompt', type=str, default="data")
-    parser.add_argument('--target_prompt', type=str, default="data")
-    parser.add_argument('--blend_word', type=str, default="data")
+    parser.add_argument('--stru_path', type=str, default="examples/image/dog2.jpg")
+    parser.add_argument('--attr_path', type=str, default="examples/image/dog.jpg")
+    parser.add_argument('--stru_prompt', type=str, default="a dog")
+    parser.add_argument('--attr_prompt', type=str, default="a dog")
+    parser.add_argument('--target_prompt', type=str, default="a photo of a dog in the grass")
+    parser.add_argument('--blend_word', type=str, default="dog")
     parser.add_argument('--results_dir', type=str, default="results")
-    parser.add_argument('--base_prompt', type=str, default="results")
     
     parser.add_argument('--start_step', type=int, default=0)
     parser.add_argument('--end_step', type=int, default=50)
     parser.add_argument('--structure_layer', type=int, default=13)
-    parser.add_argument('--structure_step', type=int, default=15)
+    parser.add_argument('--structure_step', type=int, default=20)
     parser.add_argument('--norm_step', type=int, default=50)
     
     parser.add_argument('--model_path', type=str, default="runwayml/stable-diffusion-v1-5")
     parser.add_argument('--negative_prompt', type=str, default="lowres, bad anatomy, text, error, cropped, worst quality, low quality, normal quality, jpeg artifacts, blurry")
     parser.add_argument('--use_null_ref_prompts', default=False, action="store_true")
-    parser.add_argument('--seeds', nargs='+', type=int, default=[16, 5000, 202045, 884312, 1552580])
+    parser.add_argument('--seeds', nargs='+', type=int, default=[500])
     args = parser.parse_args()
      
     sys.path.append(os.getcwd())
@@ -93,12 +92,6 @@ if __name__ == "__main__":
         ref_prompts.append(ref_text_prompt)
         ref_latents_z_0.append(model.image2latent(ref_image))
 
-        # if idx == 0:
-        #     start_code, latents_list = model.invert(ref_image,
-        #                                     ref_text_prompt,
-        #                                     guidance_scale=1.0,
-        #                                     num_inference_steps=50,)
-        #     randn_latent_z_T = start_code
 
     # set prompt
     target_prompt = args.target_prompt
@@ -111,16 +104,11 @@ if __name__ == "__main__":
     word_idx = get_word_inds(target_prompt, args.blend_word, model.tokenizer)
 
     # set dirs
-    concepts_name  = ref_image_path.split('/')[3]
     image_save_dir = os.path.join(results_dir, 'ref_images')
     mask_save_dir  = os.path.join(results_dir, 'ref_masks')
     os.makedirs(image_save_dir, exist_ok=True)
     os.makedirs(mask_save_dir, exist_ok=True)
 
-    # set config for visualization
-    viz_cfg = OmegaConf.load("configs/config_for_visualization.yaml")
-    viz_cfg.results_dir = results_dir
-    viz_cfg.ref_image_infos = ref_image_infos
 
     # save image, mask, and config
     for i, (ref_image, ref_mask) in enumerate(zip(ref_images, ref_masks)):
@@ -137,9 +125,8 @@ if __name__ == "__main__":
                                 end_step       = args.end_step,
                                 layer_idx      = [8,9,10,11,12,13,14,15],
                                 ref_masks      = ref_masks,
-                                mask_weights   = [3.0, 3.0],
+                                mask_weights   = [3.0],
                                 style_fidelity = 1,
-                                viz_cfg        = viz_cfg,
                                 word_idx       = word_idx,
                                 structure_layer = args.structure_layer,
                                 structure_step = args.structure_step,
@@ -162,7 +149,7 @@ if __name__ == "__main__":
                     guidance_scale=7.5,
                     negative_prompt=negative_prompts,
                     ).images[0]
-        images.save(os.path.join(results_dir, f"{args.base_prompt}.jpg"))
+        images.save(os.path.join(results_dir, f"result.jpg"))
         
         # concat input images and generated image
         out_image = torch.cat([ref_image * 0.5 + 0.5 for ref_image in ref_images] + [ToTensor()(images).to(device).unsqueeze(0)], dim=0)
