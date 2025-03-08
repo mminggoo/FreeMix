@@ -13,7 +13,7 @@ def normalize(x, dim):
     x_normalized = (x - x_mean) / x_std
     return x_normalized
 
-class MultiReferenceSelfAttention():
+class DMSASelfAttention():
     def __init__(self,  start_step=0, end_step=50, step_idx=None, layer_idx=None, ref_masks=None, mask_weights=[1.0,1.0,1.0], style_fidelity=1, viz_cfg=None, word_idx=None, structure_step=12, structure_layer=12, norm_step=50, noly_stru=False, noly_appear=False):
         """
         Args:
@@ -125,25 +125,6 @@ class MultiReferenceSelfAttention():
 
             sim = torch.cat(sim_or, dim=-1)
         attn = sim.softmax(-1)
-        # if self.cur_att_layer // 2 == 8 and kwargs.get("attn_batch_type") == 'mrsa':
-        #     from sklearn.decomposition import PCA
-
-        #     attn_map = attn[..., H*W:]
-        #     res = int(attn_map.shape[1]**0.5)
-        #     attn_map = attn_map.mean(0)
-
-        #     self.images.append(attn_map)
-
-        #     pca = PCA(n_components=3, random_state=42)
-
-        #     attn_map = pca.fit_transform(attn_map.detach().cpu().numpy())
-
-        #     attn_map = attn_map.reshape(res, res, 3)
-            
-        #     pca_img = (attn_map - attn_map.min()) / (attn_map.max() - attn_map.min() + 1e-8)
-
-        #     pca_img = Image.fromarray((pca_img * 255).astype(np.uint8))
-        #     pca_img.resize((256, 256)).save(f'res2/{self.cur_step}.jpg')
 
         # viz attention map within MRSA module
         if self.viz_cfg.viz_attention_map == True and \
