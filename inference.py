@@ -11,8 +11,8 @@ from diffusers import DDIMScheduler
 
 from utils.utils import load_image, load_mask
 from pipelines.pipeline_stable_diffusion_freecustom import StableDiffusionFreeCustomPipeline
-from freecustom.dmsa import DMSASelfAttention
-from freecustom.hack_attention import hack_self_attention_to_mrsa
+from freemix.dmsa import DMSASelfAttention
+from freemix.hack_attention import hack_self_attention_to_mrsa
 
 def get_word_inds(text: str, word_place: int, tokenizer):
     split_text = text.split(" ")
