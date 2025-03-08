@@ -48,36 +48,3 @@ python freecustom_stable_diffusion.py
 
 Our method excels at *rapidly* generating high-quality images with multiple concept combinations and single concept customization, without any model parameter tuning. The identity of each concept is remarkably preserved. Furthermore, our method exhibits great versatility and robustness when dealing with different categories of concepts. This versatility allows users to generate customized images that involve diverse combinations of concepts, catering to their specific needs and preferences. Best viewed on screen.
 
-## 🗓️ TODO
-- [x] Release code and datasets
-- [x] Release FreeCustom on Stable Diffusion pipeline and running script
-- [x] Release FreeCustom on BLIP Diffusion pipeline
-- [ ] Release FreeCustom on BLIP Diffusion running script
-- [ ] Release FreeCustom on ControlNet pipeline and running script
-
-
-## 🎫 License
-For non-commercial academic use, this project is licensed under [the 2-clause BSD License](https://opensource.org/license/bsd-2-clause). 
-For commercial use, please contact: [Chunhua Shen](mailto:chhshen@gmail.com)
-
-
-
-
-## 🖊️ BibTeX
-If you find this project useful in your research, please consider cite:
-
-```bibtex
-@inproceedings{ding2024freecustom,
-  title={FreeCustom: Tuning-Free Customized Image Generation for Multi-Concept Composition}, 
-  author={Ganggui Ding and Canyu Zhao and Wen Wang and Zhen Yang and Zide Liu and Hao Chen and Chunhua Shen},
-  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  year={2024}
-}
-```
-
-## 🙏 Acknowledgements
-We thank to [Stable Diffusion](https://github.com/CompVis/stable-diffusion), [MasaCtrl](https://github.com/TencentARC/MasaCtrl), [Grounded-Segment-Anything](https://github.com/IDEA-Research/Grounded-Segment-Anything), [HuggingFace](https://huggingface.co), [Prompt-to-Prompt](https://github.com/google/prompt-to-prompt), [ControlNet](https://github.com/lllyasviel/ControlNet)
-
-## 📧 Contact
-
-If you have any technical comments or questions, please open a new issue or feel free to contact [Ganggui Ding](https://dingangui.github.io)
