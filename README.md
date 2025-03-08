@@ -5,16 +5,11 @@
 </div>
 
 ## 📖 Abstract
-![results_of_multi_concept](docs/static/images/method_overview.png)
 <p>
-  Benefiting from large-scale pre-trained text-to-image (T2I) generative models, impressive progress has been achieved in customized image generation, which aims to generate user-specified concepts.
-  Existing approaches have extensively focused on single-concept customization and still encounter challenges when it comes to complex scenarios that involve combining multiple concepts. These approaches often require retraining/fine-tuning using a few images, leading to time-consuming training processes and impeding their swift implementation. 
-  Furthermore, the reliance on multiple images to represent a singular concept increases the difficulty of customization.
+  Personalized image generation has gained significant attention with the advancement of text-to-image diffusion models. However, existing methods struggle with effectively mixing multiple visual attributes, such as structure and appearance, from different reference images. Finetuning-based methods are time-consuming and prone to overfitting, while finetuning-free approaches often suffer from feature entanglement, leading to undesired distortions. 
 </p>
 <p>
-  To this end, we propose <b>FreeCustom</b>, a novel tuning-free method to generate customized images of multi-concept composition based on reference concepts, using only one image per concept as input. Specifically, we introduce a new multi-reference self-attention (MRSA) mechanism and a weighted mask strategy that enables the generated image to access and focus more on the reference concepts. In addition, MRSA leverages our key finding that input concepts are better preserved when providing images with context interactions.
-  Experiments show that our method's produced images are consistent with the given concepts and better aligned with the input text.
-  Our method outperforms or performs on par with other training-based methods in terms of multi-concept composition and single-concept customization, but is simpler.
+  To address these challenges, we propose FreeMix, a finetuning-free approach for multi-concept mixing in personalized image generation. Given a structure reference and an appearance reference, FreeMix generates a new image that integrates both attributes through Disentangle-Mixing Self-Attention (DMSA). DMSA selectively transfers structural and appearance features across different layers and time steps within a diffusion model. Extensive qualitative and quantitative experiments demonstrate that our method achieves superior structural consistency and appearance transfer compared to existing methods. In addition to personalization, FreeMix can be easily adapted to exemplar-based image editing, enabling appearance modifications.
 </p>
 
 
